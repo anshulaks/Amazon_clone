@@ -17,20 +17,9 @@ connectDB();
 // Initialize Express App
 const app = express();
 
-// ✅ **CORS Configuration**
-const allowedOrigins = [
-  "https://front-gvm2nd2bj-anshul-singhs-projects-430bef4d.vercel.app"// ✅ Your deployed frontend
- // ✅ Allow local development
-];
+// Temporary: Allow all origins during development
+app.use(cors());
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // ✅ Allows cookies/auth headers
-  })
-);
 
 // 🔹 **Middleware**
 app.use(express.json());
