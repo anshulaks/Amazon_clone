@@ -1,69 +1,125 @@
-import express from 'express'
+import express from 'express';
 import dotenv from 'dotenv';
-import connectDB from './config/db.js';  // Use a relative path here
-import authRoutes from './routes/authRoute.js'
-import cors from 'cors'
-import productRoutes from './routes/productRoutes.js'
-import categoryRoutes from './routes/categoryRoutes.js'
-import path from 'path'; // Import path for serving static files
+import connectDB from './config/db.js'; // Ensure the correct path
+import authRoutes from './routes/authRoute.js';
+import productRoutes from './routes/productRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import cors from 'cors';
+import path from 'path';
 import { fileURLToPath } from 'url';
-//config env
+
+// Load environment variables
 dotenv.config();
 
-const  app=express()
-//connectDb
+// Connect to Database
 connectDB();
 
-//middlewares
-app.use(cors())
-app.use(express.json())
+// Initialize Express App
+const app = express();
 
-//routes
-app.use('/api/v1/auth',authRoutes)
-app.use('/api/v1/category', categoryRoutes)
-app.use('/api/v1/product',productRoutes)
+// ✅ **CORS Configuration**
+const allowedOrigins = [
+  "https://front-gvm2nd2bj-anshul-singhs-projects-430bef4d.vercel.app"// ✅ Your deployed frontend
+ // ✅ Allow local development
+];
 
-// Serve static files (for production)
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // ✅ Allows cookies/auth headers
+  })
+);
+
+// 🔹 **Middleware**
+app.use(express.json());
+
+// 🔹 **API Routes**
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/category', categoryRoutes);
+app.use('/api/v1/product', productRoutes);
+
+// 🔹 **Serve Static Files (For Production)**
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, 'public')));
 
-//PORT
+// 🔹 **Root Route**
+app.get('/', (req, res) => {
+  res.send("<h1>✅ Ecommerce Backend is Running!</h1>");
+});
+
+// 🔹 **Error Handling Middleware**
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ success: false, message: "Internal Server Error" });
+});
+
+// 🔹 **Define PORT & Start Server**
 const PORT = process.env.PORT || 8080;
 
-//API REST
-app.get('/',(req,res)=>{
-    res.send("<h1>Ecommerce hello!</h1>")
-})
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
 
-//port
-
-
-
-app.listen(PORT,()=>{
-    console.log(`Server runnig on ${PORT}`)
-
-})
-
+// Export app (for testing or serverless deployments)
 export default app;
 
+// import express from 'express'
+// import dotenv from 'dotenv';
+// import connectDB from './config/db.js';  // Use a relative path here
+// import authRoutes from './routes/authRoute.js'
+// import cors from 'cors'
+// import productRoutes from './routes/productRoutes.js'
+// import categoryRoutes from './routes/categoryRoutes.js'
+// import path from 'path'; // Import path for serving static files
+// import { fileURLToPath } from 'url';
+// //config env
+// dotenv.config();
 
-// Serve static files from the React app in production
-// const __dirname = path.resolve(); // Resolve the directory name
+// const  app=express()
 
-// if (process.env.NODE_ENV === 'production') {
-//   app.use(express.static(path.join(__dirname, 'client', 'build')));
-
-//   app.get('*', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-//   });
-// } else {
-//   app.get('/', (req, res) => {
-//     res.send('<h1>Ecommerce hello! Running in Development Mode</h1>');
-//   });
-// }
-
-// Serve frontend static files
-// app.use(express.static(path.join(__dirname, "client", "build")));
-// app.get("*", (req, res) =>
-//   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+// // ✅ Allow CORS for frontend URL
+// app.use(
+//   cors({
+//     origin: "https://ecommerce-app-iota-murex.vercel.app", // ✅ Frontend URL
+//     methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allow OPTIONS
+//     allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allow Authorization header
+//     credentials: true,
+//   })
 // );
+// //connectDb
+// connectDB();
+
+// //middlewares
+// app.use(cors())
+// app.use(express.json())
+
+// //routes
+// app.use('/api/v1/auth',authRoutes)
+// app.use('/api/v1/category', categoryRoutes)
+// app.use('/api/v1/product',productRoutes)
+
+// // Serve static files (for production)
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// //PORT
+// const PORT = process.env.PORT || 8080;
+
+// //API REST
+// app.get('/',(req,res)=>{
+//     res.send("<h1>Ecommerce hello!</h1>")
+// })
+
+// //port
+
+
+
+// app.listen(PORT,()=>{
+//     console.log(`Server runnig on ${PORT}`)
+
+// })
+
+// export default app;
+
